@@ -12,15 +12,19 @@ module NewsGrafana
     def add_dimension(value)
       @dimensions = @dimensions || {}
       case @namespace
-        when AWS/ELB 
+        when "AWS/ELB" 
           @dimensions.merge!("LoadBalancerName": value)
-        when AWS/ElastiCache
+        when "AWS/ElastiCache"
           @dimensions.merge!("CacheClusterId": value)
-        # when AWS/NetworkELB
-        #   @dimensions.merge!()
+        when "AWS/NetworkELB"
+          loadBalancer, targetGroup = value.delete(" ").split(",")
+          @dimensions.merge!("LoadBalancer": loadBalancer)
+          @dimensions.merge!("TargetGroup": targetGroup)
         else 
           @dimensions.merge!("BBCEnvironment": value)
       end
     end
+
+    attr_reader :dimensions
   end
 end
